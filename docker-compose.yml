@@ -1,0 +1,39 @@
+services:
+  frontend:
+    build: mern/frontend
+    container_name: "frontend"
+    ports:
+      - "5173:5173"
+    networks:
+      - mern-net
+  
+  backend:
+    build: mern/backend
+    container_name: "backend"
+    ports:
+      - "5050:5050"
+    networks:
+      - mern-net
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    ports: 
+      - "27017:27017"
+    networks:
+      - mern-net
+    healthcheck:
+      test: ["CMD","mongosh","--eval","db.adminCommand('ping')"]
+      interval: 5s
+      retries: 5
+      timeout: 5s
+      start_period: 5s
+    volumes:
+      - mongo-data:/data/db
+
+networks: 
+  mern-net:
+
+volumes:
+  mongo-data:
